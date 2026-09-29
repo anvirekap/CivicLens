@@ -1,3 +1,4 @@
+from classifier import classify_issue
 from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -14,14 +15,16 @@ Base.metadata.create_all(bind=engine)
 class IssueCreate(BaseModel):
     title: str
     description: str
-    category: str
     location: str
     latitude: float
     longitude: float
-    priority: Literal["Low", "Medium", "High"]
 
 class IssueStatusUpdate(BaseModel):
     status: Literal["Open", "In Progress", "Resolved"]
+
+class IssueClassificationRequest(BaseModel):
+    title: str
+    description: str
 
 
 def get_db():
@@ -105,14 +108,19 @@ def create_issue(
     issue_data: IssueCreate,
     db: Session = Depends(get_db),
 ):
+    classification = classify_issue(
+        issue_data.title,
+        issue_data.description,
+    )
+
     new_issue = Issue(
         title=issue_data.title,
         description=issue_data.description,
-        category=issue_data.category,
+        category=classification["category"],
         location=issue_data.location,
         latitude=issue_data.latitude,
         longitude=issue_data.longitude,
-        priority=issue_data.priority,
+        priority=classification["priority"],
         confirmations=0,
         status="Open",
     )
@@ -158,3 +166,10 @@ def update_issue_status(
     db.refresh(issue)
 
     return issue
+
+@app.post("/classify")
+def classify_report(report: IssueClassificationRequest):
+    return classify_issue(
+        report.title,
+        report.description,
+    )
