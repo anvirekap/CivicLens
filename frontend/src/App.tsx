@@ -108,6 +108,9 @@ function LocationPicker({
 function App() {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeNav, setActiveNav] = useState<
+    "Overview" | "Map" | "Community"
+  >("Overview");
   const [confirmedIssueIds, setConfirmedIssueIds] = useState<number[]>(() => {
     try {
       const stored = sessionStorage.getItem("civiclens-confirmed-issues");
@@ -198,6 +201,18 @@ function App() {
     } finally {
       setConfirmingIssueId(null);
     }
+  }
+
+  function navigateTo(section: "Overview" | "Map" | "Community") {
+    setActiveNav(section);
+    if (section === "Overview") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    document
+      .getElementById(section === "Map" ? "community-map" : "community-feed")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   const stats = useMemo(() => {
@@ -363,15 +378,27 @@ function App() {
         </div>
 
         <div className="nav-links">
-          <button className="nav-link active">
+          <button
+            className={`nav-link ${activeNav === "Overview" ? "active" : ""}`}
+            onClick={() => navigateTo("Overview")}
+            aria-current={activeNav === "Overview" ? "page" : undefined}
+          >
             Overview
           </button>
 
-          <button className="nav-link">
+          <button
+            className={`nav-link ${activeNav === "Map" ? "active" : ""}`}
+            onClick={() => navigateTo("Map")}
+            aria-current={activeNav === "Map" ? "page" : undefined}
+          >
             Map
           </button>
 
-          <button className="nav-link">
+          <button
+            className={`nav-link ${activeNav === "Community" ? "active" : ""}`}
+            onClick={() => navigateTo("Community")}
+            aria-current={activeNav === "Community" ? "page" : undefined}
+          >
             Community
           </button>
         </div>
@@ -418,6 +445,31 @@ function App() {
           }}
           className="hero-action-card"
         >
+          <div className="hero-city-scene" aria-hidden="true">
+            <div className="city-scene-heading">
+              <span><i /> LIVE CITY SIGNAL</span>
+              <strong>01 <small>/ 04</small></strong>
+            </div>
+            <div className="city-world">
+              <div className="city-base">
+                <div className="city-road city-road-one" />
+                <div className="city-road city-road-two" />
+                <div className="city-road city-road-three" />
+                <div className="city-building building-one" />
+                <div className="city-building building-two" />
+                <div className="city-building building-three" />
+                <div className="city-building building-four" />
+                <div className="city-park" />
+                <div className="city-pin city-pin-high"><b>!</b><i /></div>
+                <div className="city-pin city-pin-community"><b>3</b><i /></div>
+              </div>
+            </div>
+            <div className="city-scene-caption">
+              <span>COMMUNITY OVERVIEW</span>
+              <strong><i /> LIVE</strong>
+            </div>
+          </div>
+
           <div className="action-icon">
             <CircleAlert size={22} />
           </div>
@@ -469,7 +521,7 @@ function App() {
       </section>
 
       <section className="workspace">
-        <div className="map-panel">
+        <div className="map-panel" id="community-map">
           <div className="panel-header">
             <div>
               <span className="section-label">
@@ -520,7 +572,7 @@ function App() {
           </div>
         </div>
 
-        <div className="issues-panel">
+        <div className="issues-panel" id="community-feed">
           <div className="panel-header">
             <div>
               <span className="section-label">
