@@ -2,7 +2,6 @@
   position: relative;
   width: min(1440px, calc(100% - 48px));
   margin: 0 auto;
-  overflow: hidden;
 }
 
 .ambient {
@@ -66,33 +65,37 @@
 }
 
 .nav-link {
+  padding: 10px 14px;
   border: 0;
+  border-radius: 9px;
   background: transparent;
   color: #858b9a;
-  padding: 10px 14px;
-  border-radius: 9px;
   transition: 0.2s ease;
 }
 
 .nav-link:hover,
 .nav-link.active {
-  color: #ffffff;
+  color: #fff;
   background: rgba(255, 255, 255, 0.05);
 }
 
 .report-button,
-.hero-action-card button {
+.hero-action-card button,
+.continue-report-button {
   border: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: white;
-  font-weight: 700;
   border-radius: 11px;
   background: linear-gradient(135deg, #6475ff, #7857e8);
+  color: #fff;
+  font-weight: 700;
   box-shadow: 0 10px 30px rgba(100, 117, 255, 0.2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .report-button {
@@ -100,7 +103,8 @@
 }
 
 .report-button:hover,
-.hero-action-card button:hover {
+.hero-action-card button:hover,
+.continue-report-button:not(:disabled):hover {
   transform: translateY(-2px);
   box-shadow: 0 14px 35px rgba(100, 117, 255, 0.3);
 }
@@ -137,8 +141,8 @@
 }
 
 .hero-copy h1 {
-  margin: 22px 0 18px;
   max-width: 700px;
+  margin: 22px 0 18px;
   font-family: "Manrope", sans-serif;
   font-size: clamp(48px, 5.7vw, 78px);
   line-height: 0.98;
@@ -160,12 +164,14 @@
 }
 
 .hero-action-card {
-  position: relative;
   padding: 28px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 22px;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025));
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.075),
+    rgba(255, 255, 255, 0.025)
+  );
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.24);
   backdrop-filter: blur(18px);
 }
@@ -176,10 +182,10 @@
   display: grid;
   place-items: center;
   margin-bottom: 24px;
-  border-radius: 13px;
-  color: #9ca5ff;
-  background: rgba(109, 124, 255, 0.12);
   border: 1px solid rgba(109, 124, 255, 0.2);
+  border-radius: 13px;
+  background: rgba(109, 124, 255, 0.12);
+  color: #9ca5ff;
 }
 
 .small-label,
@@ -199,8 +205,8 @@
 
 .hero-action-card p {
   color: #888f9f;
-  line-height: 1.55;
   font-size: 14px;
+  line-height: 1.55;
 }
 
 .hero-action-card button {
@@ -234,8 +240,8 @@
   display: grid;
   place-items: center;
   border-radius: 12px;
-  color: #8e9aff;
   background: rgba(109, 124, 255, 0.1);
+  color: #8e9aff;
 }
 
 .stat-card span {
@@ -259,10 +265,10 @@
 
 .map-panel,
 .issues-panel {
+  overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.075);
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.025);
-  overflow: hidden;
 }
 
 .panel-header {
@@ -292,90 +298,109 @@
   color: #b4bac6;
 }
 
-.map-placeholder {
-  position: relative;
-  min-height: 570px;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at center, rgba(101, 117, 255, 0.09), transparent 40%),
-    #0a0e17;
+.real-map {
+  height: 570px;
+  background: #0a0e17;
 }
 
-.map-grid {
-  position: absolute;
-  inset: 0;
-  opacity: 0.17;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-  background-size: 38px 38px;
-  mask-image: linear-gradient(to bottom, black, transparent);
+.leaflet-map {
+  width: 100%;
+  height: 100%;
+  background: #0a0e17;
 }
 
-.map-center-content {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #b8bec9;
+.real-map .leaflet-container {
+  width: 100% !important;
+  height: 570px !important;
+  min-height: 570px !important;
 }
 
-.map-center-content > span {
-  margin-top: 17px;
-  font-family: "Manrope", sans-serif;
-  font-weight: 700;
+.civic-marker,
+.selected-civic-marker {
+  border: 0;
+  background: transparent;
 }
 
-.map-center-content p {
-  margin: 6px 0;
-  color: #666e7e;
-  font-size: 13px;
-}
-
-.map-orb {
-  width: 68px;
-  height: 68px;
-  display: grid;
-  place-items: center;
-  border-radius: 20px;
-  color: #9aa4ff;
-  border: 1px solid rgba(123, 137, 255, 0.25);
-  background: rgba(100, 117, 255, 0.12);
-  box-shadow: 0 15px 50px rgba(83, 101, 255, 0.18);
-}
-
-.fake-marker {
-  position: absolute;
-  width: 35px;
-  height: 35px;
-  display: grid;
-  place-items: center;
-  border-radius: 50% 50% 50% 5px;
-  transform: rotate(-45deg);
-  color: white;
+.civic-marker-inner {
+  width: 20px;
+  height: 20px;
+  border: 4px solid #fff;
+  border-radius: 50%;
   background: #6d7cff;
-  box-shadow: 0 8px 25px rgba(109, 124, 255, 0.35);
+  box-shadow:
+    0 0 0 5px rgba(109, 124, 255, 0.2),
+    0 5px 20px rgba(61, 76, 210, 0.55);
 }
 
-.fake-marker svg {
-  transform: rotate(45deg);
+.selected-marker-inner {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border: 5px solid #fff;
+  border-radius: 50%;
+  background: #6d7cff;
+  box-shadow:
+    0 0 0 8px rgba(109, 124, 255, 0.18),
+    0 8px 35px rgba(109, 124, 255, 0.7);
 }
 
-.marker-1 {
-  top: 25%;
-  left: 24%;
+.selected-marker-inner::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border: 1px solid rgba(139, 151, 255, 0.5);
+  border-radius: 50%;
+  animation: markerPulse 1.7s infinite;
 }
 
-.marker-2 {
-  top: 62%;
-  left: 69%;
+@keyframes markerPulse {
+  0% {
+    transform: scale(0.75);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
 }
 
-.marker-3 {
-  top: 37%;
-  left: 77%;
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: #121722;
+  color: #fff;
+}
+
+.leaflet-popup-content-wrapper {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 13px;
+}
+
+.map-popup {
+  min-width: 190px;
+  font-family: "DM Sans", sans-serif;
+}
+
+.map-popup strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.map-popup span {
+  color: #9aa4ff;
+  font-size: 11px;
+}
+
+.map-popup p {
+  color: #a0a6b2;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.map-popup b {
+  color: #ff9999;
+  font-size: 11px;
 }
 
 .issue-count {
@@ -384,8 +409,8 @@
   display: grid;
   place-items: center;
   border-radius: 8px;
-  color: #aab2ff;
   background: rgba(109, 124, 255, 0.12);
+  color: #aab2ff;
   font-size: 12px;
   font-weight: 700;
 }
@@ -397,8 +422,8 @@
 }
 
 .issue-card {
-  padding: 18px;
   margin-bottom: 10px;
+  padding: 18px;
   border: 1px solid rgba(255, 255, 255, 0.065);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.025);
@@ -423,23 +448,23 @@
   border-radius: 7px;
   font-size: 10px;
   font-weight: 800;
-  text-transform: uppercase;
   letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .priority-high {
-  color: #ff9999;
   background: rgba(255, 91, 91, 0.1);
+  color: #ff9999;
 }
 
 .priority-medium {
-  color: #ffc978;
   background: rgba(255, 174, 70, 0.1);
+  color: #ffc978;
 }
 
 .priority-low {
-  color: #72deb9;
   background: rgba(72, 211, 160, 0.1);
+  color: #72deb9;
 }
 
 .urgency {
@@ -451,7 +476,6 @@
   margin: 15px 0 7px;
   font-family: "Manrope", sans-serif;
   font-size: 16px;
-  letter-spacing: -0.025em;
 }
 
 .issue-card > p {
@@ -502,6 +526,264 @@ footer {
   font-size: 13px;
 }
 
+/* REPORT FLOW */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(3, 5, 10, 0.78);
+  backdrop-filter: blur(14px);
+}
+
+.report-modal {
+  width: min(540px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 24px;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(109, 124, 255, 0.14),
+      transparent 35%
+    ),
+    #10141e;
+  box-shadow:
+    0 40px 120px rgba(0, 0, 0, 0.55),
+    0 0 60px rgba(88, 102, 230, 0.08);
+}
+
+.report-modal-map {
+  width: min(760px, 100%);
+}
+
+.report-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.report-modal-header h2 {
+  margin: 7px 0 0;
+  font-family: "Manrope", sans-serif;
+  font-size: 27px;
+  letter-spacing: -0.045em;
+}
+
+.close-button {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #9299a8;
+  font-size: 24px;
+  line-height: 1;
+  transition: 0.2s ease;
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.report-intro {
+  margin: 18px 0 26px;
+  color: #858d9d;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.report-field {
+  margin-bottom: 18px;
+}
+
+.report-field label {
+  display: block;
+  margin-bottom: 8px;
+  color: #b6bcc8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.report-field input,
+.report-field textarea {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  outline: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.035);
+  color: #fff;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.report-field textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.report-field input::placeholder,
+.report-field textarea::placeholder {
+  color: #555e6f;
+}
+
+.report-field input:focus,
+.report-field textarea:focus {
+  border-color: rgba(119, 132, 255, 0.65);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 4px rgba(109, 124, 255, 0.08);
+}
+
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -3px 0 17px;
+  padding: 11px 13px;
+  border: 1px solid rgba(255, 107, 107, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 91, 91, 0.07);
+  color: #ff9999;
+  font-size: 12px;
+}
+
+.location-preview {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin: 5px 0 22px;
+  padding: 14px;
+  border: 1px dashed rgba(127, 140, 255, 0.25);
+  border-radius: 13px;
+  background: rgba(109, 124, 255, 0.055);
+  color: #8994ff;
+}
+
+.location-preview div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.location-preview strong {
+  color: #c6cbff;
+  font-size: 12px;
+}
+
+.location-preview span {
+  color: #6f7787;
+  font-size: 11px;
+}
+
+.continue-report-button {
+  width: 100%;
+  padding: 14px 18px;
+}
+
+.continue-report-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+  box-shadow: none;
+}
+
+.picker-status {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 8px 11px;
+  border: 1px solid rgba(109, 124, 255, 0.16);
+  border-radius: 9px;
+  background: rgba(109, 124, 255, 0.07);
+  color: #9fa8ff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.report-picker-map {
+  position: relative;
+  height: 390px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: #080c13;
+  box-shadow: inset 0 0 0 1px rgba(109, 124, 255, 0.03);
+}
+
+.report-picker-map .leaflet-container {
+  width: 100% !important;
+  height: 390px !important;
+  min-height: 390px !important;
+  cursor: crosshair;
+}
+
+.coordinate-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.coordinate-preview span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  color: #6f7787;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.coordinate-preview strong {
+  color: #aeb5c5;
+  font-size: 11px;
+  letter-spacing: 0;
+}
+
+.report-map-actions {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #a4abba;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+}
+
 @media (max-width: 950px) {
   .hero-section,
   .workspace {
@@ -550,91 +832,21 @@ footer {
     padding: 14px;
   }
 
-  .workspace {
+  .report-modal {
+    padding: 22px;
+  }
+
+  .report-picker-map,
+  .report-picker-map .leaflet-container {
+    height: 310px !important;
+    min-height: 310px !important;
+  }
+
+  .coordinate-preview {
     grid-template-columns: 1fr;
   }
-}
 
-.real-map {
-  height: 570px;
-  background: #0a0e17;
-}
-
-.leaflet-map {
-  width: 100%;
-  height: 100%;
-  background: #0a0e17;
-}
-
-.civic-marker {
-  background: transparent;
-  border: none;
-}
-
-.civic-marker-inner {
-  width: 20px;
-  height: 20px;
-  border: 4px solid #ffffff;
-  border-radius: 50%;
-  background: #6d7cff;
-  box-shadow:
-    0 0 0 5px rgba(109, 124, 255, 0.2),
-    0 5px 20px rgba(61, 76, 210, 0.55);
-}
-
-.leaflet-popup-content-wrapper,
-.leaflet-popup-tip {
-  background: #121722;
-  color: #ffffff;
-}
-
-.leaflet-popup-content-wrapper {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 13px;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.4);
-}
-
-.map-popup {
-  min-width: 190px;
-  font-family: "DM Sans", sans-serif;
-}
-
-.map-popup strong {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 14px;
-}
-
-.map-popup span {
-  color: #9aa4ff;
-  font-size: 11px;
-}
-
-.map-popup p {
-  color: #a0a6b2;
-  font-size: 12px;
-  line-height: 1.45;
-}
-
-.map-popup b {
-  color: #ff9999;
-  font-size: 11px;
-}
-
-.leaflet-container {
-  width: 100% !important;
-  height: 570px !important;
-  min-height: 570px !important;
-  display: block !important;
-  position: relative !important;
-  z-index: 1;
-}
-
-.leaflet-tile-pane {
-  opacity: 1 !important;
-}
-
-.leaflet-tile {
-  visibility: visible !important;
-  opacity: 1 !important;
+  .report-map-actions {
+    grid-template-columns: 1fr;
+  }
 }
