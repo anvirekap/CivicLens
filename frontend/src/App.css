@@ -985,7 +985,24 @@ footer {
 }
 
 .real-map {
+  position: relative;
   box-shadow: 0 12px 32px rgba(0,0,0,0.22) inset;
+}
+
+.map-explore-message {
+  position: absolute;
+  z-index: 600;
+  right: 14px;
+  bottom: 14px;
+  padding: 9px 12px;
+  border: 1px solid rgba(170, 184, 255, 0.2);
+  border-radius: 10px;
+  background: rgba(12, 17, 28, 0.88);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+  color: #c2c9df;
+  font-size: 11px;
+  pointer-events: none;
+  backdrop-filter: blur(12px);
 }
 
 .hero-city-scene {

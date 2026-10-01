@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import "./App.css";
 import "./report.css";
@@ -25,6 +25,7 @@ import {
   Marker,
   Popup,
   TileLayer,
+  useMap,
   useMapEvents,
 } from "react-leaflet";
 
@@ -105,6 +106,17 @@ function LocationPicker({
   );
 }
 
+function MapInstance({ onReady }: { onReady: (map: L.Map | null) => void }) {
+  const map = useMap();
+
+  useEffect(() => {
+    onReady(map);
+    return () => onReady(null);
+  }, [map, onReady]);
+
+  return null;
+}
+
 function App() {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
@@ -124,6 +136,8 @@ function App() {
   });
   const [confirmingIssueId, setConfirmingIssueId] = useState<number | null>(null);
   const [confirmError, setConfirmError] = useState("");
+  const mapRef = useRef<L.Map | null>(null);
+  const [mapExploreMessage, setMapExploreMessage] = useState("");
 
   const [reportOpen, setReportOpen] = useState(false);
   const [reportStep, setReportStep] =
@@ -213,6 +227,34 @@ function App() {
     document
       .getElementById(section === "Map" ? "community-map" : "community-feed")
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  const setMapInstance = useCallback((map: L.Map | null) => {
+    mapRef.current = map;
+  }, []);
+
+  function exploreIssues() {
+    if (issues.length === 0) {
+      setMapExploreMessage("No reports to explore yet.");
+      return;
+    }
+
+    const map = mapRef.current;
+    if (!map) {
+      setMapExploreMessage("The map is still loading. Try again in a moment.");
+      return;
+    }
+
+    const bounds = L.latLngBounds(
+      issues.map((issue) => [issue.latitude, issue.longitude] as [number, number]),
+    );
+    map.fitBounds(bounds, {
+      padding: [42, 42],
+      maxZoom: 15,
+      animate: true,
+      duration: 0.8,
+    });
+    setMapExploreMessage(`Showing all ${issues.length} ${issues.length === 1 ? "report" : "reports"}.`);
   }
 
   const stats = useMemo(() => {
@@ -531,7 +573,7 @@ function App() {
               <h2>Community overview</h2>
             </div>
 
-            <button className="filter-button">
+            <button className="filter-button" onClick={exploreIssues}>
               <Search size={16} />
               Explore
             </button>
@@ -544,6 +586,7 @@ function App() {
               scrollWheelZoom
               className="leaflet-map"
             >
+              <MapInstance onReady={setMapInstance} />
               <TileLayer
                 attribution="&copy; OpenStreetMap contributors"
                 url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -569,6 +612,11 @@ function App() {
                 </Marker>
               ))}
             </MapContainer>
+            {mapExploreMessage && (
+              <div className="map-explore-message" role="status" aria-live="polite">
+                {mapExploreMessage}
+              </div>
+            )}
           </div>
         </div>
 
