@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   Sparkles,
   Users,
+  X,
 } from "lucide-react";
 
 import {
@@ -123,6 +124,9 @@ function App() {
   const [activeNav, setActiveNav] = useState<
     "Overview" | "Map" | "Community"
   >("Overview");
+  const [selectedPriorities, setSelectedPriorities] = useState<
+    Array<"High" | "Medium" | "Low">
+  >([]);
   const [confirmedIssueIds, setConfirmedIssueIds] = useState<number[]>(() => {
     try {
       const stored = sessionStorage.getItem("civiclens-confirmed-issues");
@@ -278,6 +282,19 @@ function App() {
       confirmations,
     };
   }, [issues]);
+
+  const visibleIssues = useMemo(
+    () => selectedPriorities.length === 0
+      ? issues
+      : issues.filter((issue) => selectedPriorities.includes(issue.priority as "High" | "Medium" | "Low")),
+    [issues, selectedPriorities],
+  );
+
+  function togglePriority(priority: "High" | "Medium" | "Low") {
+    setSelectedPriorities((current) => current.includes(priority)
+      ? current.filter((selected) => selected !== priority)
+      : [...current, priority]);
+  }
 
   const mapCenter: [number, number] =
     issues.length > 0
@@ -631,8 +648,32 @@ function App() {
             </div>
 
             <span className="issue-count">
-              {issues.length}
+              {visibleIssues.length}
             </span>
+          </div>
+
+          <div className="priority-filter-bar" role="group" aria-label="Filter issue feed by priority">
+            <span className="priority-filter-label">PRIORITY</span>
+            {(["High", "Medium", "Low"] as const).map((priority) => (
+              <button
+                key={priority}
+                type="button"
+                className={`priority-filter-chip priority-filter-${priority.toLowerCase()} ${selectedPriorities.includes(priority) ? "selected" : ""}`}
+                aria-pressed={selectedPriorities.includes(priority)}
+                onClick={() => togglePriority(priority)}
+              >
+                {priority}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="clear-priority-filters"
+              onClick={() => setSelectedPriorities([])}
+              disabled={selectedPriorities.length === 0}
+            >
+              <X size={13} />
+              Clear filters
+            </button>
           </div>
 
           <div className="issue-list">
@@ -648,6 +689,12 @@ function App() {
               </p>
             )}
 
+            {!loading && issues.length > 0 && visibleIssues.length === 0 && (
+              <p className="empty-message">
+                No reports match these priorities.
+              </p>
+            )}
+
             {confirmError && (
               <div className="confirm-error" role="alert">
                 <CircleAlert size={15} />
@@ -655,7 +702,7 @@ function App() {
               </div>
             )}
 
-            {issues.slice(0, 4).map((issue, index) => (
+            {visibleIssues.slice(0, 4).map((issue, index) => (
               <motion.article
                 key={issue.id}
                 initial={{ opacity: 0, x: 15 }}

@@ -421,6 +421,82 @@
   overflow-y: auto;
 }
 
+.priority-filter-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+  background: rgba(255, 255, 255, 0.012);
+}
+
+.priority-filter-label {
+  margin-right: 2px;
+  color: #687286;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.priority-filter-chip,
+.clear-priority-filters {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+  color: #858d9d;
+  font-size: 10px;
+  font-weight: 700;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.priority-filter-chip:hover:not(.selected) {
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #d4d9e5;
+}
+
+.priority-filter-high.selected {
+  border-color: rgba(255, 125, 135, 0.32);
+  background: rgba(255, 91, 91, 0.13);
+  color: #ff9da4;
+}
+
+.priority-filter-medium.selected {
+  border-color: rgba(255, 193, 107, 0.3);
+  background: rgba(255, 174, 70, 0.12);
+  color: #ffd08a;
+}
+
+.priority-filter-low.selected {
+  border-color: rgba(89, 223, 176, 0.28);
+  background: rgba(72, 211, 160, 0.11);
+  color: #83e7c3;
+}
+
+.clear-priority-filters {
+  margin-left: auto;
+  border-color: transparent;
+  background: transparent;
+  color: #929aab;
+}
+
+.clear-priority-filters:not(:disabled):hover {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.clear-priority-filters:disabled {
+  cursor: default;
+  opacity: 0.38;
+}
+
 .issue-card {
   margin-bottom: 10px;
   padding: 18px;
