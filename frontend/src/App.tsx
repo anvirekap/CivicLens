@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import "./App.css";
 import "./report.css";
+import "./confirm.css";
 
 import {
   ArrowLeft,
@@ -107,6 +108,19 @@ function LocationPicker({
 function App() {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
+  const [confirmedIssueIds, setConfirmedIssueIds] = useState<number[]>(() => {
+    try {
+      const stored = sessionStorage.getItem("civiclens-confirmed-issues");
+      const parsed: unknown = stored ? JSON.parse(stored) : [];
+      return Array.isArray(parsed)
+        ? parsed.filter((issueId): issueId is number => Number.isInteger(issueId))
+        : [];
+    } catch {
+      return [];
+    }
+  });
+  const [confirmingIssueId, setConfirmingIssueId] = useState<number | null>(null);
+  const [confirmError, setConfirmError] = useState("");
 
   const [reportOpen, setReportOpen] = useState(false);
   const [reportStep, setReportStep] =
@@ -146,6 +160,43 @@ function App() {
       console.error("Failed to load issues:", error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function confirmIssue(issueId: number) {
+    if (confirmedIssueIds.includes(issueId) || confirmingIssueId !== null) {
+      return;
+    }
+
+    setConfirmingIssueId(issueId);
+    setConfirmError("");
+
+    try {
+      const response = await fetch(`${API_URL}/issues/${issueId}/confirm`, {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Could not confirm this issue.");
+      }
+
+      const nextConfirmedIds = [...confirmedIssueIds, issueId];
+      setConfirmedIssueIds(nextConfirmedIds);
+      try {
+        sessionStorage.setItem(
+          "civiclens-confirmed-issues",
+          JSON.stringify(nextConfirmedIds),
+        );
+      } catch (storageError) {
+        console.warn("Could not save this confirmation for the session:", storageError);
+      }
+
+      await loadIssues();
+    } catch (error) {
+      console.error("Failed to confirm issue:", error);
+      setConfirmError("Confirmation failed. Please try again.");
+    } finally {
+      setConfirmingIssueId(null);
     }
   }
 
@@ -497,6 +548,13 @@ function App() {
               </p>
             )}
 
+            {confirmError && (
+              <div className="confirm-error" role="alert">
+                <CircleAlert size={15} />
+                {confirmError}
+              </div>
+            )}
+
             {issues.slice(0, 4).map((issue, index) => (
               <motion.article
                 key={issue.id}
@@ -535,8 +593,24 @@ function App() {
                 </div>
 
                 <div className="issue-footer">
-                  <span>{issue.category}</span>
-                  <span>{issue.status}</span>
+                  <div className="issue-footer-labels">
+                    <span>{issue.category}</span>
+                    <span>{issue.status}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className={`confirm-issue-button ${confirmedIssueIds.includes(issue.id) ? "confirmed" : ""}`}
+                    onClick={() => confirmIssue(issue.id)}
+                    disabled={confirmedIssueIds.includes(issue.id) || confirmingIssueId !== null}
+                  >
+                    {confirmingIssueId === issue.id ? (
+                      <><LoaderCircle size={14} className="spin" />Confirming...</>
+                    ) : confirmedIssueIds.includes(issue.id) ? (
+                      <><CheckCircle2 size={14} />Confirmed ✓</>
+                    ) : (
+                      <><Users size={14} />Confirm issue</>
+                    )}
+                  </button>
                 </div>
               </motion.article>
             ))}

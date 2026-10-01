@@ -1,0 +1,72 @@
+/* CivicLens — Community confirmations */
+
+.issue-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.issue-footer-labels {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.confirm-issue-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 8px 11px;
+  border: 1px solid rgba(109, 124, 255, 0.2);
+  border-radius: 9px;
+  background: rgba(109, 124, 255, 0.08);
+  color: #aeb6ff;
+  font-size: 11px;
+  font-weight: 700;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.confirm-issue-button:not(:disabled):hover {
+  transform: translateY(-1px);
+  border-color: rgba(109, 124, 255, 0.42);
+  background: rgba(109, 124, 255, 0.15);
+  color: #ffffff;
+}
+
+.confirm-issue-button.confirmed {
+  border-color: rgba(72, 211, 160, 0.18);
+  background: rgba(72, 211, 160, 0.08);
+  color: #72deb9;
+}
+
+.confirm-issue-button:disabled {
+  cursor: default;
+}
+
+.confirm-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 107, 107, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 91, 91, 0.07);
+  color: #ff9999;
+  font-size: 11px;
+}
+
+@media (max-width: 700px) {
+  .issue-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .confirm-issue-button {
+    width: 100%;
+  }
+}
