@@ -59,6 +59,7 @@ type Classification = {
 };
 
 const API_URL = "http://127.0.0.1:8002";
+const DEFAULT_MAP_CENTER: [number, number] = [45.4215, -75.6972];
 
 const issueIcon = L.divIcon({
   className: "civic-marker",
@@ -261,6 +262,13 @@ function App() {
     setMapExploreMessage(`Showing all ${issues.length} ${issues.length === 1 ? "report" : "reports"}.`);
   }
 
+  function openMapOverview() {
+    navigateTo("Map");
+    if (issues.length > 0) {
+      exploreIssues();
+    }
+  }
+
   const stats = useMemo(() => {
     const highPriority = issues.filter(
       (issue) => issue.priority === "High"
@@ -299,7 +307,7 @@ function App() {
   const mapCenter: [number, number] =
     issues.length > 0
       ? [issues[0].latitude, issues[0].longitude]
-      : [0, 0];
+      : DEFAULT_MAP_CENTER;
 
   function resetReport() {
     setReportStep("details");
@@ -465,6 +473,7 @@ function App() {
         <button
           className="report-button"
           onClick={openReport}
+          aria-label="Report an issue"
         >
           <Plus size={17} />
           Report an issue
@@ -553,6 +562,51 @@ function App() {
         </motion.div>
       </section>
 
+      <section className="getting-started" aria-labelledby="getting-started-title">
+        <div className="getting-started-heading">
+          <div>
+            <span className="section-label">NEW TO CIVICLENS?</span>
+            <h2 id="getting-started-title">Make your neighbourhood better in three steps.</h2>
+          </div>
+          <p>Choose a place to start. Every report and confirmation helps your community see what needs attention.</p>
+        </div>
+
+        <div className="getting-started-steps">
+          <button className="getting-started-step" type="button" onClick={openReport}>
+            <span className="getting-started-number">01</span>
+            <span className="getting-started-copy">
+              <strong>Report an issue</strong>
+              <span>Describe a local problem and pin its location.</span>
+            </span>
+            <ArrowUpRight size={16} />
+          </button>
+          <button
+            className="getting-started-step"
+            type="button"
+            onClick={openMapOverview}
+          >
+            <span className="getting-started-number">02</span>
+            <span className="getting-started-copy">
+              <strong>Explore the map</strong>
+              <span>See what has been reported around you.</span>
+            </span>
+            <ArrowUpRight size={16} />
+          </button>
+          <button
+            className="getting-started-step"
+            type="button"
+            onClick={() => navigateTo("Community")}
+          >
+            <span className="getting-started-number">03</span>
+            <span className="getting-started-copy">
+              <strong>Confirm an issue</strong>
+              <span>Support reports you have seen in real life.</span>
+            </span>
+            <ArrowUpRight size={16} />
+          </button>
+        </div>
+      </section>
+
       <section className="stats-grid">
         <StatCard
           icon={<MapPin size={19} />}
@@ -629,6 +683,14 @@ function App() {
                 </Marker>
               ))}
             </MapContainer>
+            {!loading && issues.length === 0 && (
+              <div className="map-empty-state">
+                <div className="map-empty-icon"><MapPin size={18} /></div>
+                <strong>Your community map starts here</strong>
+                <span>Report a local issue to place the first marker.</span>
+                <button type="button" onClick={openReport}>Report the first issue</button>
+              </div>
+            )}
             {mapExploreMessage && (
               <div className="map-explore-message" role="status" aria-live="polite">
                 {mapExploreMessage}
@@ -684,9 +746,11 @@ function App() {
             )}
 
             {!loading && issues.length === 0 && (
-              <p className="empty-message">
-                No reports yet.
-              </p>
+              <div className="empty-feed-state">
+                <strong>No community reports yet</strong>
+                <span>Be the first to report a local issue.</span>
+                <button type="button" onClick={openReport}>Create a report</button>
+              </div>
             )}
 
             {!loading && issues.length > 0 && visibleIssues.length === 0 && (
@@ -828,10 +892,12 @@ function App() {
                 </p>
 
                 <div className="report-field">
-                  <label>Issue title</label>
+                  <label htmlFor="report-title">Issue title</label>
 
                   <input
+                    id="report-title"
                     type="text"
+                    aria-required="true"
                     value={title}
                     onChange={(event) =>
                       setTitle(event.target.value)
@@ -841,10 +907,12 @@ function App() {
                 </div>
 
                 <div className="report-field">
-                  <label>Description</label>
+                  <label htmlFor="report-description">Description</label>
 
                   <textarea
+                    id="report-description"
                     rows={4}
+                    aria-required="true"
                     value={description}
                     onChange={(event) =>
                       setDescription(event.target.value)
@@ -854,10 +922,12 @@ function App() {
                 </div>
 
                 <div className="report-field">
-                  <label>Location</label>
+                  <label htmlFor="report-location">Location</label>
 
                   <input
+                    id="report-location"
                     type="text"
+                    aria-required="true"
                     value={location}
                     onChange={(event) =>
                       setLocation(event.target.value)
@@ -867,7 +937,7 @@ function App() {
                 </div>
 
                 {formError && (
-                  <div className="form-error">
+                  <div className="form-error" role="alert">
                     <CircleAlert size={16} />
                     {formError}
                   </div>
@@ -976,7 +1046,7 @@ function App() {
                 )}
 
                 {formError && (
-                  <div className="form-error">
+                  <div className="form-error" role="alert">
                     <CircleAlert size={16} />
                     {formError}
                   </div>
@@ -1113,7 +1183,7 @@ function App() {
                 </div>
 
                 {formError && (
-                  <div className="form-error">
+                  <div className="form-error" role="alert">
                     <CircleAlert size={16} />
                     {formError}
                   </div>
