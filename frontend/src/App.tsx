@@ -59,7 +59,12 @@ type Classification = {
   priority: string;
 };
 
-const API_URL = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8002").replace(/\/$/, "");
+const PRODUCTION_API_URL = "https://civiclens-api-jpwu.onrender.com";
+const API_URL = (
+  import.meta.env.PROD
+    ? PRODUCTION_API_URL
+    : import.meta.env.VITE_API_URL || "http://127.0.0.1:8002"
+).replace(/\/$/, "");
 const DEFAULT_MAP_CENTER: [number, number] = [45.4215, -75.6972];
 const SpatialWorkspace = lazy(() => import("./spatial/SpatialWorkspace"));
 
