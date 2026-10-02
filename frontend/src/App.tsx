@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import "./App.css";
 import "./report.css";
@@ -7,6 +7,7 @@ import "./confirm.css";
 import {
   ArrowLeft,
   ArrowUpRight,
+  Boxes,
   Check,
   CheckCircle2,
   CircleAlert,
@@ -58,8 +59,9 @@ type Classification = {
   priority: string;
 };
 
-const API_URL = "http://127.0.0.1:8002";
+const API_URL = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8002").replace(/\/$/, "");
 const DEFAULT_MAP_CENTER: [number, number] = [45.4215, -75.6972];
+const SpatialWorkspace = lazy(() => import("./spatial/SpatialWorkspace"));
 
 const issueIcon = L.divIcon({
   className: "civic-marker",
@@ -120,6 +122,7 @@ function MapInstance({ onReady }: { onReady: (map: L.Map | null) => void }) {
 }
 
 function App() {
+  const [spatialMode, setSpatialMode] = useState(false);
   const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeNav, setActiveNav] = useState<
@@ -430,6 +433,14 @@ function App() {
     }
   }
 
+  if (spatialMode) {
+    return (
+      <Suspense fallback={<main className="spatial-loading-screen">Opening the 3D workspace…</main>}>
+        <SpatialWorkspace issues={issues} onExit={() => setSpatialMode(false)} />
+      </Suspense>
+    );
+  }
+
   return (
     <main className="app-shell">
       <div className="ambient ambient-one" />
@@ -469,6 +480,16 @@ function App() {
             Community
           </button>
         </div>
+
+        <button
+          className="spatial-launch-button"
+          type="button"
+          onClick={() => setSpatialMode(true)}
+          aria-label="Open CivicLens 3D Spatial Lab"
+        >
+          <Boxes size={16} />
+          3D Lab
+        </button>
 
         <button
           className="report-button"

@@ -39,6 +39,21 @@ npm run dev -- --port 5175
 
 Open the local URL printed by Vite (typically `http://localhost:5175`). The frontend expects the API at `http://127.0.0.1:8002`.
 
+To point the frontend at a different API while developing, set `VITE_API_URL` in `frontend/.env.local`. See [frontend/.env.example](frontend/.env.example).
+
+## Deploy
+
+The repository includes a Render Blueprint (`render.yaml`) for the static frontend and FastAPI service. The API is configured to use a hosted PostgreSQL database in production; local development continues to use SQLite.
+
+1. Create a Supabase project and open **Connect** → **Session pooler**. Copy the PostgreSQL connection string. Render's backend uses IPv4, so Supabase's session pooler is the compatible connection option. Keep this string private.
+2. In Render, choose **New** → **Blueprint**, connect the `anvirekap/CivicLens` GitHub repository, and select the branch containing the deployment changes.
+3. When Render asks for `DATABASE_URL`, paste the Supabase session-pooler connection string. The Blueprint creates `civiclens-api` and `civiclens-web`; its configured public URLs are `https://civiclens-api.onrender.com` and `https://civiclens-web.onrender.com`.
+4. Wait for both services to finish deploying. Open the web URL and check that issue loading works. The API health check is available at `https://civiclens-api.onrender.com/`.
+
+If Render requires different service names because those names are already in use, update the corresponding `VITE_API_URL` and `CORS_ORIGINS` values in `render.yaml` to match the generated `onrender.com` URLs. If you connect a custom frontend domain, add its full `https://` origin to the API's `CORS_ORIGINS` setting.
+
+Render's free web service may sleep when idle, so its first request after a quiet period can take longer. The frontend is hosted as a static site. See [Render's free instance details](https://render.com/docs/free) and [Supabase's connection guide](https://supabase.com/docs/guides/database/connecting-to-postgres).
+
 ## API routes
 
 - `GET /` — API health check
@@ -59,4 +74,4 @@ npm run lint
 npm run build
 ```
 
-The backend stores data in a local SQLite database at `backend/civiclens.db`.
+The backend stores data in a local SQLite database at `backend/civiclens.db` unless `DATABASE_URL` is set. Production should use a persistent PostgreSQL database.
