@@ -894,11 +894,88 @@ footer {
   transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
 }
 
+.spatial-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .spatial-launch-button:hover {
   transform: translateY(-1px);
   border-color: rgba(141, 154, 255, 0.36);
   background: rgba(109, 124, 255, 0.14);
   color: #fff;
+}
+
+.design-world-launch-button {
+  border-color: rgba(69, 224, 183, 0.2);
+  background: rgba(69, 224, 183, 0.07);
+  color: #8ae9cf;
+}
+
+.design-world-launch-button:hover {
+  border-color: rgba(69, 224, 183, 0.4);
+  background: rgba(69, 224, 183, 0.13);
+}
+
+.design-world-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+}
+
+.design-world-toolbar {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(8, 10, 16, 0.97);
+  color: #f7f8fc;
+  font: 700 13px "Manrope", sans-serif;
+}
+
+.design-world-brand,
+.design-world-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.design-world-brand > svg {
+  color: #85e7ce;
+}
+
+.design-world-brand span {
+  color: #838b9d;
+  font-weight: 500;
+}
+
+.design-world-exit {
+  padding: 9px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #edf0f7;
+  font: inherit;
+  cursor: pointer;
+}
+
+.design-world-exit:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.design-world-frame {
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  border: 0;
+  background: #000;
 }
 
 .spatial-loading-screen {

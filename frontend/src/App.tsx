@@ -128,6 +128,7 @@ function MapInstance({ onReady }: { onReady: (map: L.Map | null) => void }) {
 
 function App() {
   const [spatialMode, setSpatialMode] = useState(false);
+  const [designWorldMode, setDesignWorldMode] = useState(false);
   const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeNav, setActiveNav] = useState<
@@ -150,6 +151,8 @@ function App() {
   const [confirmingIssueId, setConfirmingIssueId] = useState<number | null>(null);
   const [confirmError, setConfirmError] = useState("");
   const mapRef = useRef<L.Map | null>(null);
+  const designWorldFrameRef = useRef<HTMLIFrameElement | null>(null);
+  const designWorldNavigationRef = useRef<(section: string) => void>(() => {});
   const [mapExploreMessage, setMapExploreMessage] = useState("");
 
   const [reportOpen, setReportOpen] = useState(false);
@@ -173,6 +176,23 @@ function App() {
 
   useEffect(() => {
     loadIssues();
+  }, []);
+
+  useEffect(() => {
+    function handleDesignWorldNavigation(event: MessageEvent) {
+      if (event.source !== designWorldFrameRef.current?.contentWindow) return;
+      if (event.origin !== window.location.origin) return;
+
+      const message = event.data as { type?: unknown; section?: unknown };
+      if (message?.type !== "civiclens:navigate") return;
+      setDesignWorldMode(false);
+      if (typeof message.section === "string") {
+        window.setTimeout(() => designWorldNavigationRef.current(message.section as string), 0);
+      }
+    }
+
+    window.addEventListener("message", handleDesignWorldNavigation);
+    return () => window.removeEventListener("message", handleDesignWorldNavigation);
   }, []);
 
   async function loadIssues() {
@@ -334,6 +354,16 @@ function App() {
     setReportOpen(true);
   }
 
+  designWorldNavigationRef.current = (section) => {
+    if (section === "report") {
+      openReport();
+    } else if (section === "3DLab") {
+      setSpatialMode(true);
+    } else if (section === "Overview" || section === "Map" || section === "Community") {
+      navigateTo(section);
+    }
+  };
+
   function closeReport() {
     setReportOpen(false);
 
@@ -446,6 +476,26 @@ function App() {
     );
   }
 
+  if (designWorldMode) {
+    return (
+      <main className="design-world-shell">
+        <header className="design-world-toolbar">
+          <div className="design-world-brand"><Sparkles size={17} /> CivicLens <span>Spatial Studio</span></div>
+          <button type="button" className="design-world-exit" onClick={() => setDesignWorldMode(false)}>
+            <ArrowLeft size={16} /> Return to CivicLens
+          </button>
+        </header>
+        <iframe
+          ref={designWorldFrameRef}
+          className="design-world-frame"
+          src="/design-world.html"
+          title="CivicLens Spatial Studio interactive 3D experience"
+          allow="fullscreen"
+        />
+      </main>
+    );
+  }
+
   return (
     <main className="app-shell">
       <div className="ambient ambient-one" />
@@ -486,15 +536,27 @@ function App() {
           </button>
         </div>
 
-        <button
-          className="spatial-launch-button"
-          type="button"
-          onClick={() => setSpatialMode(true)}
-          aria-label="Open CivicLens 3D Spatial Lab"
-        >
-          <Boxes size={16} />
-          3D Lab
-        </button>
+        <div className="spatial-tools" aria-label="3D experiences">
+          <button
+            className="spatial-launch-button"
+            type="button"
+            onClick={() => setSpatialMode(true)}
+            aria-label="Open CivicLens 3D Spatial Lab"
+          >
+            <Boxes size={16} />
+            3D Lab
+          </button>
+
+          <button
+            className="spatial-launch-button design-world-launch-button"
+            type="button"
+            onClick={() => setDesignWorldMode(true)}
+            aria-label="Open CivicLens Spatial Studio"
+          >
+            <Sparkles size={15} />
+            Spatial Studio
+          </button>
+        </div>
 
         <button
           className="report-button"
